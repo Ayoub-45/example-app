@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD with Docker
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       - name: Run tests
         run: npm test
 
-  deploy:
+  docker-build:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -34,6 +34,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to Render/Heroku/Your Server
-        run: echo "Deploying to production..."
-        # Replace this with actual deployment command (e.g., render deploy, heroku deploy, rsync, etc.)
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.docker12345 }}" | docker login -u "${{ secrets.ayoub46 }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t your-dockerhub-username/node-api:latest .
+
+      - name: Push Docker image
+        run: docker push your-dockerhub-username/node-api:latest
